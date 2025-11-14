@@ -22,11 +22,7 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="sidebar-header">
         <div className="logo">
-          <img
-            width="50"
-            src="../../public/PayPerRoute.png"
-            alt="HoldPay Logo"
-          />
+          <img width="50" src="/PayPerRoute.png" alt="HoldPay Logo" />
         </div>
         <h2 className="brand-name">HoldPay</h2>
         <p className="brand-tagline">Trusted Delivery Powered by Bitcoin</p>

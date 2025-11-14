@@ -7,14 +7,15 @@ import '../styles/MakeOrder.css';
 const MakeOrder = () => {
   const [formData, setFormData] = useState({});
 
-  const [qrCode, setQrcode] = useState(null);
-  const [lnaddress, setLnaddress] = useState(null);
-  const shortBolt11 = lnaddress
-    ? lnaddress.slice(0, 20) + '...' + lnaddress.slice(-10)
-    : '';
+  // const [qrCode, setQrcode] = useState(null);
+  // const [lnaddress, setLnaddress] = useState(null);
+  // const shortBolt11 = lnaddress
+  //   ? lnaddress.slice(0, 20) + '...' + lnaddress.slice(-10)
+  //   : '';
 
   function handleOrder(formData) {
     const amount = formData.get('amount');
+    // const email = formData.get('email');
     const orderDesc = formData.get('orderDesc');
     const deliveryAddress = formData.get('deliveryAddress');
     const recipientName = formData.get('recipientName');
@@ -36,20 +37,20 @@ const MakeOrder = () => {
     setFormData(data);
   }
 
-  async function handleSubmit() {
-    try {
-      const res = await axios.post('http://localhost:3000/create-invoice', {
-        satoshis: parseInt(amount),
-        customerEmail: 'lynn@gmail.com',
-        description: 'Payment to Escrow',
-        expiresAt: '2025-12-01T12:00:00Z',
-      });
-      setLnaddress(res.data.bolt11);
-      setQrcode(res.data.qrImage);
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  // async function handleSubmit() {
+  //   try {
+  //     const res = await axios.post('http://localhost:3000/create-invoice', {
+  //       satoshis: parseInt(amount),
+  //       customerEmail: email,
+  //       description: orderDesc,
+  //       expiresAt: '2025-12-01T12:00:00Z',
+  //     });
+  //     setLnaddress(res.data.bolt11);
+  //     setQrcode(res.data.qrImage);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 
   return (
     <div className="make-order-container">
@@ -62,10 +63,7 @@ const MakeOrder = () => {
 
       <form action={handleOrder} className="order-form">
         <div className="form-section">
-          <h2>
-            {/* <Lightning size={20} /> */}
-            Payment to Escrow
-          </h2>
+          <h2>Payment to Escrow</h2>
 
           <div className="form-group">
             <label htmlFor="amount">Amount (Sats)</label>
@@ -172,7 +170,6 @@ const MakeOrder = () => {
         </div>
 
         <button type="submit" className="pay-button">
-          {/* <Lightning size={20} /> */}
           Pay in Sats
         </button>
       </form>

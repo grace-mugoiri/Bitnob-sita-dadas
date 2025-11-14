@@ -33,7 +33,7 @@
   align-items: center;
   gap: 1rem;
   border: 1px solid rgba(20, 184, 166, 0.1);
-  border-left: 4px solid #14b8a6;
+  border-left: 4px solid gray;
 }
 
 .stat-card.success {
@@ -85,7 +85,7 @@
 
 .filter-tab {
   flex: 1;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -108,7 +108,7 @@
 .orders-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  gap: 1rem;
   justify-content: center;
 }
 
@@ -140,7 +140,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -198,7 +197,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: 0.5rem;
   background: #f9fafb;
   border-radius: 8px;
 }
@@ -249,7 +248,7 @@
 .reason-section {
   display: flex;
   gap: 0.5rem;
-  padding: 0.75rem;
+  padding: 0.5rem;
   background: #fef2f2;
   border-radius: 8px;
   border-left: 3px solid #ef4444;
