@@ -1,58 +1,60 @@
-import React, { useState } from 'react';
-import { Bitcoin, ShoppingCart, MapPin, User, Phone } from 'lucide-react';
+import { useState } from 'react';
+
+import { ShoppingCart, MapPin, User, Phone } from 'lucide-react';
+
 import '../styles/MakeOrder.css';
 
 const MakeOrder = () => {
-  const [formData, setFormData] = useState({
-    amount: '',
-    orderDescription: '',
-    deliveryAddress: '',
-    recipientName: '',
-    recipientPhone: '',
-    riderName: '',
-    riderPhone: '',
-    whatsapp: '',
-  });
+  const [formData, setFormData] = useState({});
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  function handleOrder(formData) {
+    const amount = formData.get('amount');
+    const orderDesc = formData.get('orderDesc');
+    const deliveryAddress = formData.get('deliveryAddress');
+    const recipientName = formData.get('recipientName');
+    const recipientPhone = formData.get('recipientPhone');
+    const riderName = formData.get('riderName');
+    const riderPhone = formData.get('riderPhone');
+    const whatsapp = formData.get('whatsapp');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Payment to Escrow:', formData);
-    // Here you'll integrate with Bitnob API
-  };
+    const data = {
+      amount,
+      orderDesc,
+      deliveryAddress,
+      recipientName,
+      recipientPhone,
+      riderName,
+      riderPhone,
+      whatsapp,
+    };
+    setFormData(data);
+  }
+
+  console.log(formData);
 
   return (
     <div className="make-order-container">
       <div className="make-order-header">
-        <div className="header-icon">
-          <ShoppingCart size={32} />
-        </div>
         <h1>Make Order</h1>
-        <p className="subtitle">Setup your order and pay securely with Bitcoin</p>
+        <p className="subtitle">
+          Setup your order and pay securely with Lightning
+        </p>
       </div>
 
-      <form className="order-form" onSubmit={handleSubmit}>
+      <form action={handleOrder} className="order-form">
         <div className="form-section">
           <h2>
-            <Bitcoin size={20} />
+            {/* <Lightning size={20} /> */}
             Payment to Escrow
           </h2>
 
           <div className="form-group">
-            <label htmlFor="amount">Amount (BTC)</label>
+            <label htmlFor="amount">Amount (Sats)</label>
             <input
-              type="text"
+              type="number"
               id="amount"
               name="amount"
-              placeholder="0.0000"
-              value={formData.amount}
-              onChange={handleChange}
+              placeholder="0.0000 Sats"
               required
             />
           </div>
@@ -64,8 +66,6 @@ const MakeOrder = () => {
               id="orderDescription"
               name="orderDescription"
               placeholder="e.g., Electronics - Laptop"
-              value={formData.orderDescription}
-              onChange={handleChange}
               required
             />
           </div>
@@ -83,8 +83,6 @@ const MakeOrder = () => {
               id="deliveryAddress"
               name="deliveryAddress"
               placeholder="Enter full delivery address"
-              value={formData.deliveryAddress}
-              onChange={handleChange}
               rows="3"
               required
             />
@@ -98,8 +96,6 @@ const MakeOrder = () => {
                 id="recipientName"
                 name="recipientName"
                 placeholder="Full name"
-                value={formData.recipientName}
-                onChange={handleChange}
                 required
               />
             </div>
@@ -111,8 +107,6 @@ const MakeOrder = () => {
                 id="recipientPhone"
                 name="recipientPhone"
                 placeholder="+254..."
-                value={formData.recipientPhone}
-                onChange={handleChange}
                 required
               />
             </div>
@@ -133,8 +127,6 @@ const MakeOrder = () => {
                 id="riderName"
                 name="riderName"
                 placeholder="Rider name"
-                value={formData.riderName}
-                onChange={handleChange}
               />
             </div>
 
@@ -145,8 +137,6 @@ const MakeOrder = () => {
                 id="riderPhone"
                 name="riderPhone"
                 placeholder="+254..."
-                value={formData.riderPhone}
-                onChange={handleChange}
               />
             </div>
           </div>
@@ -158,15 +148,13 @@ const MakeOrder = () => {
               id="whatsapp"
               name="whatsapp"
               placeholder="+254..."
-              value={formData.whatsapp}
-              onChange={handleChange}
             />
           </div>
         </div>
 
         <button type="submit" className="pay-button">
-          <Bitcoin size={20} />
-          Pay in BTC
+          {/* <Lightning size={20} /> */}
+          Pay in Sats
         </button>
       </form>
     </div>

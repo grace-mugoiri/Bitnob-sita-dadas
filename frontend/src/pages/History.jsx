@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calendar, CheckCircle, XCircle, Package } from 'lucide-react';
 import '../styles/History.css';
 
