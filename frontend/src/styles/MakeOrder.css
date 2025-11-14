@@ -1,24 +1,13 @@
 .make-order-container {
-  padding: 2rem;
-  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  max-width: 55%;
   margin: 0 auto;
 }
 
 .make-order-header {
   text-align: center;
-  margin-bottom: 2rem;
-}
-
-.header-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
-  color: white;
+  margin: 1.5rem 1rem;
 }
 
 .make-order-header h1 {
@@ -34,11 +23,12 @@
   padding: 2rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(20, 184, 166, 0.1);
+  margin-bottom: 1.5rem;
 }
 
 .form-section {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -61,7 +51,7 @@
 }
 
 .form-group label {
-  display: block;
+  display: flex;
   margin-bottom: 0.5rem;
   color: #374151;
   font-weight: 500;
@@ -70,7 +60,7 @@
 
 .form-group input,
 .form-group textarea {
-  width: 100%;
+  width: 90%;
   padding: 0.75rem 1rem;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
@@ -94,34 +84,27 @@
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .pay-button {
   width: 100%;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  background-color: teal;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-  margin-top: 1rem;
 }
 
 .pay-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.3);
-}
-
-.pay-button:active {
-  transform: translateY(0);
+  background-color: lightseagreen;
 }
 
 @media (max-width: 640px) {
@@ -131,6 +114,7 @@
 
   .make-order-container {
     padding: 1rem;
+    max-width: 100%;
   }
 
   .order-form {

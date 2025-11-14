@@ -1,16 +1,8 @@
-import React from 'react';
 import { Package, Clock, Shield, Truck } from 'lucide-react';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
   const orders = [
-    {
-      id: '#12345',
-      amount: '0.0025 BTC',
-      status: 'not-arrived',
-      statusText: 'Not Yet Arrived',
-      delivery: 'In Transit',
-    },
     {
       id: '#12346',
       amount: '0.0018 BTC',
@@ -60,9 +52,7 @@ const Dashboard = () => {
         {orders.map((order) => (
           <div key={order.id} className={`order-card ${order.status}`}>
             <div className="order-header">
-              <div className="order-icon">
-                {getStatusIcon(order.status)}
-              </div>
+              <div className="order-icon">{getStatusIcon(order.status)}</div>
               <div className="order-info">
                 <h3>Order {order.id}</h3>
                 <p className="order-amount">{order.amount}</p>

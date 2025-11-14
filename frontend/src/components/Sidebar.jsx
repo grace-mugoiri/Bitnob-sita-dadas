@@ -1,6 +1,12 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ShoppingCart, Navigation, History, Settings, Bitcoin } from 'lucide-react';
+import {
+  LayoutDashboard,
+  ShoppingCart,
+  Navigation,
+  History,
+  Settings,
+  Bitcoin,
+} from 'lucide-react';
 import '../styles/Sidebar.css';
 
 const Sidebar = () => {
