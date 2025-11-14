@@ -51,7 +51,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.4;
   }
@@ -119,16 +120,15 @@
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(20, 184, 166, 0.1);
 }
 
 .info-card h2 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: #1a1a1a;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
   border-bottom: 2px solid #14b8a6;
 }
 
@@ -167,16 +167,16 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .contact-button {
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  padding: 0.6rem;
+  background: teal;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -187,12 +187,11 @@
 }
 
 .contact-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+  background-color: lightseagreen;
 }
 
 .status-timeline h2 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: #1a1a1a;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
@@ -249,7 +248,8 @@
 }
 
 @keyframes pulse-dot {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

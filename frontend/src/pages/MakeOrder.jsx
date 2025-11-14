@@ -7,6 +7,12 @@ import '../styles/MakeOrder.css';
 const MakeOrder = () => {
   const [formData, setFormData] = useState({});
 
+  const [qrCode, setQrcode] = useState(null);
+  const [lnaddress, setLnaddress] = useState(null);
+  const shortBolt11 = lnaddress
+    ? lnaddress.slice(0, 20) + '...' + lnaddress.slice(-10)
+    : '';
+
   function handleOrder(formData) {
     const amount = formData.get('amount');
     const orderDesc = formData.get('orderDesc');
@@ -30,7 +36,20 @@ const MakeOrder = () => {
     setFormData(data);
   }
 
-  console.log(formData);
+  async function handleSubmit() {
+    try {
+      const res = await axios.post('http://localhost:3000/create-invoice', {
+        satoshis: parseInt(amount),
+        customerEmail: 'lynn@gmail.com',
+        description: 'Payment to Escrow',
+        expiresAt: '2025-12-01T12:00:00Z',
+      });
+      setLnaddress(res.data.bolt11);
+      setQrcode(res.data.qrImage);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <div className="make-order-container">
