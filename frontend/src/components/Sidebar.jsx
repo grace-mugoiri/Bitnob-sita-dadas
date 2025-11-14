@@ -18,8 +18,8 @@ const Sidebar = () => {
         <div className="logo">
           <Bitcoin size={32} />
         </div>
-        <h2 className="brand-name">Escrow Pay</h2>
-        <p className="brand-tagline">Secure Bitcoin Delivery</p>
+        <h2 className="brand-name">HoldPay</h2>
+        <p className="brand-tagline">Trusted Delivery Powered by Bitcoin</p>
       </div>
 
       <nav className="sidebar-nav">
