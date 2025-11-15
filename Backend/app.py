@@ -6,6 +6,11 @@ import json
 import random
 import requests
 import uuid
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
@@ -13,8 +18,10 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 # Bitnob API Configuration
-BITNOB_API_KEY = 'sk.a3b16addc515471db615806072009b5d.f72728da61bf486b8bca580093aa742fd7bd3f946eab454aa75d58b717ac7a30'
-BITNOB_BASE_URL = 'https://api.bitnob.co'
+app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
+BITNOB_API_KEY = os.getenv("BITNOB_API_KEY")
+BITNOB_BASE_URL = os.getenv("BITNOB_BASE_URL")
+
 
 # In-memory storage (use database in production)
 orders = {}
