@@ -6,6 +6,7 @@ import MakeOrder from './pages/MakeOrder';
 import Tracker from './pages/Tracker';
 import History from './pages/History';
 import Settings from './pages/Settings';
+
 import './App.css';
 
 function App() {

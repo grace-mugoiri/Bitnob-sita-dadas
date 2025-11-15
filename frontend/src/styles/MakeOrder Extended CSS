@@ -1,0 +1,224 @@
+/* Add to MakeOrder.css */
+
+.payment-success {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.success-icon {
+  width: 96px;
+  height: 96px;
+  background: #d1fae5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: #10b981;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.order-id {
+  font-size: 1.125rem;
+  color: #14b8a6;
+  font-weight: 600;
+  margin: 0.5rem 0 2rem;
+}
+
+.payment-details-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(20, 184, 166, 0.1);
+  text-align: left;
+}
+
+.payment-details-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #14b8a6;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #14b8a6;
+}
+
+.payment-info {
+  margin-bottom: 2rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.info-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.invoice-section,
+.address-section {
+  margin: 1.5rem 0;
+}
+
+.invoice-section label,
+.address-section label {
+  display: block;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.copy-box {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.copy-box textarea,
+.copy-box input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  resize: none;
+}
+
+.copy-box textarea {
+  min-height: 80px;
+}
+
+.copy-btn {
+  padding: 0.75rem 1rem;
+  background: #14b8a6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.copy-btn:hover {
+  background: #0d9488;
+}
+
+.hint {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.payment-instructions {
+  background: #f0fdfa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.payment-instructions h3 {
+  color: #14b8a6;
+  margin-bottom: 1rem;
+}
+
+.payment-instructions ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.payment-instructions li {
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.dashboard-btn,
+.new-order-btn {
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.dashboard-btn {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  color: white;
+}
+
+.new-order-btn {
+  background: white;
+  color: #14b8a6;
+  border: 2px solid #14b8a6;
+}
+
+.dashboard-btn:hover,
+.new-order-btn:hover {
+  transform: translateY(-2px);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.form-group .hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+@media (max-width: 640px) {
+  .action-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .copy-box {
+    flex-direction: column;
+  }
+
+  .payment-details-card {
+    padding: 1.5rem;
+  }
+}
