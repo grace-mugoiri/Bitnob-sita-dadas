@@ -165,14 +165,12 @@ const MakeOrder = () => {
   }
 
   return (
-    <div className="make-order-container">
-      <div className="make-order-header">
-        <div className="header-icon">
-          <ShoppingCart size={32} />
-        </div>
-        <h1>Make Order</h1>
-        <p className="subtitle">Setup your order and pay securely with Bitcoin</p>
-      </div>
+    <>
+      {/* ------------------ QR POPUP MODAL ------------------ */}
+      {showQR && (
+        <div className="qr-modal-overlay">
+          <div className="qr-modal-content">
+            <h2>Scan to Pay</h2>
 
       <form className="order-form" onSubmit={handleSubmit}>
         <div className="form-section">
@@ -221,54 +219,91 @@ const MakeOrder = () => {
             />
           </div>
         </div>
+      )}
 
-        <div className="form-section">
-          <h2>
-            <MapPin size={20} />
-            Delivery Info
-          </h2>
+      {/* ------------------ ORDER SUMMARY SCREEN ------------------ */}
+      {showSummary && (
+        <div className="summary-overlay">
+          <div className="summary-card">
+            <h2>Order Summary</h2>
 
-          <div className="form-group">
-            <label htmlFor="deliveryAddress">Delivery Address</label>
-            <textarea
-              id="deliveryAddress"
-              name="deliveryAddress"
-              placeholder="Enter full delivery address"
-              value={formData.deliveryAddress}
-              onChange={handleChange}
-              rows="3"
-              required
-            />
-          </div>
+            <p>
+              <strong>Order ID:</strong> {orderInfo.orderId}
+            </p>
+            <p>
+              <strong>Amount (Sats):</strong> {orderInfo.amount}
+            </p>
+            <p>
+              <strong>Description:</strong> {orderInfo.orderDesc}
+            </p>
+            <p>
+              <strong>Delivery Address:</strong> {orderInfo.deliveryAddress}
+            </p>
+            <p>
+              <strong>Recipient:</strong> {orderInfo.recipientName}
+            </p>
+            <p>
+              <strong>Recipient Phone:</strong> {orderInfo.recipientPhone}
+            </p>
+            <p>
+              <strong>Email:</strong> {orderInfo.email}
+            </p>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="recipientName">Recipient Name</label>
-              <input
-                type="text"
-                id="recipientName"
-                name="recipientName"
-                placeholder="Full name"
-                value={formData.recipientName}
-                onChange={handleChange}
-                required
-              />
-            </div>
+            <div className="summary-btns">
+              <button
+                className="cancel-btn"
+                onClick={() => {
+                  setShowSummary(false);
+                  setLnInvoice(null);
+                  setQrCode(null);
+                  setShowQR(false);
+                  setExpiryTime(null);
+                }}
+              >
+                Edit Order
+              </button>
 
-            <div className="form-group">
-              <label htmlFor="recipientPhone">Recipient Phone</label>
-              <input
-                type="tel"
-                id="recipientPhone"
-                name="recipientPhone"
-                placeholder="+254..."
-                value={formData.recipientPhone}
-                onChange={handleChange}
-                required
-              />
+              <button className="confirm-btn" onClick={confirmAndPay}>
+                Confirm & Generate Invoice
+              </button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* ------------------ MAIN FORM ------------------ */}
+      <div className="make-order-container">
+        <div className="make-order-header">
+          <h1>Make Order</h1>
+          <p className="subtitle">
+            Setup your order and pay securely with Lightning
+          </p>
+        </div>
+
+        <form action={handleOrder} className="order-form">
+          <div className="form-section">
+            <h2>Payment to Escrow</h2>
+
+            <div className="form-group">
+              <label>Amount (Sats)</label>
+              <input type="number" name="amount" required />
+            </div>
+
+            <div className="form-group">
+              <label>Order Description</label>
+              <input type="text" name="orderDescription" required />
+            </div>
+
+            <div className="form-group">
+              <label>Your Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+          </div>
 
         <div className="form-section">
           <h2>
@@ -276,44 +311,41 @@ const MakeOrder = () => {
             Rider Details (Optional)
           </h2>
 
-          <div className="form-row">
             <div className="form-group">
-              <label htmlFor="riderName">Rider Name</label>
-              <input
-                type="text"
-                id="riderName"
-                name="riderName"
-                placeholder="Rider name"
-                value={formData.riderName}
-                onChange={handleChange}
-              />
+              <label>Delivery Address</label>
+              <textarea name="deliveryAddress" rows="3" required />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="riderPhone">Rider Phone</label>
-              <input
-                type="tel"
-                id="riderPhone"
-                name="riderPhone"
-                placeholder="+254..."
-                value={formData.riderPhone}
-                onChange={handleChange}
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Recipient Name</label>
+                <input name="recipientName" required />
+              </div>
+
+              <div className="form-group">
+                <label>Recipient Phone</label>
+                <input name="recipientPhone" required />
+              </div>
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="whatsapp">WhatsApp</label>
-            <input
-              type="tel"
-              id="whatsapp"
-              name="whatsapp"
-              placeholder="+254..."
-              value={formData.whatsapp}
-              onChange={handleChange}
-            />
+          <div className="form-section">
+            <h2>
+              <User size={20} /> Rider Details
+            </h2>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Rider Name</label>
+                <input name="riderName" />
+              </div>
+
+              <div className="form-group">
+                <label>Rider Phone</label>
+                <input name="riderPhone" />
+              </div>
+            </div>
           </div>
-        </div>
 
         <button type="submit" className="pay-button" disabled={loading}>
           {loading ? (

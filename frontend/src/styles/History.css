@@ -1,11 +1,13 @@
 .history-container {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
 }
 
 .history-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .history-header h1 {
@@ -31,7 +33,7 @@
   align-items: center;
   gap: 1rem;
   border: 1px solid rgba(20, 184, 166, 0.1);
-  border-left: 4px solid #14b8a6;
+  border-left: 4px solid gray;
 }
 
 .stat-card.success {
@@ -43,9 +45,9 @@
 }
 
 .stat-icon {
-  width: 40px;
-  height: 40px;
-  color: #14b8a6;
+  width: 30px;
+  height: 30px;
+  color: gray;
 }
 
 .stat-card.success .stat-icon {
@@ -57,7 +59,7 @@
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 0.25rem 0;
@@ -83,7 +85,7 @@
 
 .filter-tab {
   flex: 1;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1rem;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -104,16 +106,17 @@
 }
 
 .orders-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  justify-content: center;
 }
 
 .history-card {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
   border: 1px solid rgba(20, 184, 166, 0.1);
@@ -137,7 +140,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -195,7 +197,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: 0.5rem;
   background: #f9fafb;
   border-radius: 8px;
 }
@@ -246,7 +248,7 @@
 .reason-section {
   display: flex;
   gap: 0.5rem;
-  padding: 0.75rem;
+  padding: 0.5rem;
   background: #fef2f2;
   border-radius: 8px;
   border-left: 3px solid #ef4444;

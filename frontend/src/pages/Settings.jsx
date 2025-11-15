@@ -1,5 +1,13 @@
-import React, { useState } from 'react';
-import { Moon, Sun, Globe, Eye, EyeOff, DollarSign, Settings as SettingsIcon } from 'lucide-react';
+import { useState } from 'react';
+import {
+  Moon,
+  Sun,
+  Globe,
+  Eye,
+  EyeOff,
+  DollarSign,
+  Settings as SettingsIcon,
+} from 'lucide-react';
 import '../styles/Settings.css';
 
 const Settings = () => {
@@ -28,13 +36,12 @@ const Settings = () => {
 
   return (
     <div className="settings-container">
-      <div className="settings-header">
-        <div className="header-icon">
-          <SettingsIcon size={32} />
-        </div>
-        <h1>Settings</h1>
-        <p className="subtitle">Customize your app preferences</p>
+      <div className="settings-actions">
+        <button className="save-button">Save Changes</button>
+        <button className="reset-button">Reset to Default</button>
       </div>
+      <h1>Settings</h1>
+      <p className="subtitle">Customize your app preferences</p>
 
       <div className="settings-grid">
         <div className="settings-card">
@@ -87,7 +94,11 @@ const Settings = () => {
           <div className="setting-item">
             <div className="setting-info">
               <div className="setting-icon">
-                {settings.hideDetails ? <EyeOff size={24} /> : <Eye size={24} />}
+                {settings.hideDetails ? (
+                  <EyeOff size={24} />
+                ) : (
+                  <Eye size={24} />
+                )}
               </div>
               <div>
                 <h3>Hide Details</h3>
@@ -129,11 +140,6 @@ const Settings = () => {
             </select>
           </div>
         </div>
-      </div>
-
-      <div className="settings-actions">
-        <button className="save-button">Save Changes</button>
-        <button className="reset-button">Reset to Default</button>
       </div>
     </div>
   );
