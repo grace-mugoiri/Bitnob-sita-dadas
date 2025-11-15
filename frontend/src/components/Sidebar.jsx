@@ -16,10 +16,10 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="sidebar-header">
         <div className="logo">
-          <Bitcoin size={32} />
+          <Bitcoin size={50} className="logo-icon" />
         </div>
-        <h2 className="brand-name">Escrow Pay</h2>
-        <p className="brand-tagline">Secure Bitcoin Delivery</p>
+        <h2 className="brand-name">HoldPay</h2>
+        <p className="brand-tagline">Trusted Delivery Powered by Bitcoin</p>
       </div>
 
       <nav className="sidebar-nav">

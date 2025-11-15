@@ -13,13 +13,14 @@ load_dotenv()
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY", 'your-secret-key-change-in-production')
+app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
 CORS(app, resources={r"/*": {"origins": "*"}})
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 # Bitnob API Configuration
+app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 BITNOB_API_KEY = os.getenv("BITNOB_API_KEY")
-BITNOB_BASE_URL = os.getenv("BITNOB_BASE_URL", "https://api.bitnob.com")
+BITNOB_BASE_URL = os.getenv("BITNOB_BASE_URL")
 
 
 # In-memory storage (use database in production)
@@ -36,148 +37,48 @@ NAIROBI_COORDS = {
     'lng': 36.817223
 }
 
-# ============= Bitnob Lightning Invoice API =============
+# ============= Bitnob API Integration =============
 
-def create_lightning_invoice(amount_btc, customer_email, description="Escrow payment"):
-    """Create a Lightning Network invoice"""
+def create_bitnob_invoice(amount_btc, description, customer_email):
+    """Create a payment invoice using Bitnob API"""
     url = f"{BITNOB_BASE_URL}/api/v1/wallets/ln/createinvoice"
-
-    # Convert BTC to satoshis (1 BTC = 100,000,000 satoshis)
-    satoshis = int(float(amount_btc) * 100000000)
-
     headers = {
         'Authorization': f'Bearer {BITNOB_API_KEY}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Content-Type': 'application/json'
     }
-
-    # Calculate expiration timestamp (current time + 1 hour)
-    from datetime import datetime, timedelta
-    expires_at = (datetime.utcnow() + timedelta(hours=1)).isoformat() + 'Z'
-
+    
+    # Convert BTC to satoshis
+    amount_sats = int(float(amount_btc) * 100000000)
+    
     payload = {
-        'satoshis': satoshis,
-        'customerEmail': customer_email,
+        'amount': amount_sats,
         'description': description,
-        'expiresAt': expires_at
+        'customerEmail': customer_email
     }
-
+    
     try:
-        print(f"⚡ Creating Lightning Invoice: {url}")
-        print(f"📦 Payload: {payload}")
         response = requests.post(url, json=payload, headers=headers)
-        print(f"📡 Status Code: {response.status_code}")
-        print(f"📄 Response: {response.text}")
         response.raise_for_status()
         return response.json()
     except Exception as e:
-        print(f"❌ Lightning Invoice Error: {str(e)}")
-        if 'response' in locals():
-            print(f"Response status: {response.status_code}")
-            print(f"Response body: {response.text}")
+        print(f"Bitnob API Error: {str(e)}")
         return None
 
-# ============= Bitnob Offramp API Integration =============
-
-def create_bitnob_quote(amount_btc, from_asset="btc", to_currency="KES"):
-    """Step 1: Create a quote for the offramp transaction"""
-    url = f"{BITNOB_BASE_URL}/api/v1/payouts/quotes"
+def verify_bitnob_payment(payment_hash):
+    """Verify if a payment has been completed"""
+    url = f"{BITNOB_BASE_URL}/api/v1/wallets/ln/lookup/{payment_hash}"
     headers = {
-        'Authorization': f'Bearer {BITNOB_API_KEY}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Authorization': f'Bearer {BITNOB_API_KEY}'
     }
-
-    # Convert BTC to cents (assuming 1 BTC = reasonable fiat amount)
-    # For testing, let's assume a conversion rate
-    amount_in_cents = int(float(amount_btc) * 10000000)  # Adjust based on actual rate
-
-    payload = {
-        'source': 'offchain',
-        'fromAsset': from_asset,
-        'toCurrency': to_currency,
-        'chain': 'lightning',
-        'amount': amount_in_cents,
-        'settlementAmount': amount_in_cents
-    }
-
+    
     try:
-        print(f"📤 Step 1: Creating Bitnob Quote: {url}")
-        print(f"📦 Payload: {payload}")
-        response = requests.post(url, json=payload, headers=headers)
-        print(f"📡 Status Code: {response.status_code}")
-        print(f"📄 Response: {response.text}")
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        return data.get('status') == 'paid'
     except Exception as e:
-        print(f"❌ Quote Creation Error: {str(e)}")
-        if 'response' in locals():
-            print(f"Response status: {response.status_code}")
-            print(f"Response body: {response.text}")
-        return None
-
-def initialize_bitnob_payout(quote_id, customer_id, recipient_name, recipient_phone, country="KE", reference=None):
-    """Step 2: Initialize the payout with recipient details"""
-    url = f"{BITNOB_BASE_URL}/api/v1/payouts/initialize"
-    headers = {
-        'Authorization': f'Bearer {BITNOB_API_KEY}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-
-    if not reference:
-        reference = f"ORDER-{str(uuid.uuid4())[:12].upper()}"
-
-    payload = {
-        'quoteId': quote_id,
-        'customerId': customer_id,
-        'country': country,
-        'reference': reference,
-        'paymentReason': 'Delivery payment via escrow'
-    }
-
-    try:
-        print(f"📤 Step 2: Initializing Bitnob Payout: {url}")
-        print(f"📦 Payload: {payload}")
-        response = requests.post(url, json=payload, headers=headers)
-        print(f"📡 Status Code: {response.status_code}")
-        print(f"📄 Response: {response.text}")
-        response.raise_for_status()
-        return response.json()
-    except Exception as e:
-        print(f"❌ Payout Initialization Error: {str(e)}")
-        if 'response' in locals():
-            print(f"Response status: {response.status_code}")
-            print(f"Response body: {response.text}")
-        return None
-
-def finalize_bitnob_payout(quote_id):
-    """Step 3: Finalize the payout (release funds from escrow)"""
-    url = f"{BITNOB_BASE_URL}/api/v1/payouts/finalize"
-    headers = {
-        'Authorization': f'Bearer {BITNOB_API_KEY}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-
-    payload = {
-        'quoteId': quote_id
-    }
-
-    try:
-        print(f"📤 Step 3: Finalizing Bitnob Payout: {url}")
-        print(f"📦 Payload: {payload}")
-        response = requests.post(url, json=payload, headers=headers)
-        print(f"📡 Status Code: {response.status_code}")
-        print(f"📄 Response: {response.text}")
-        response.raise_for_status()
-        return response.json()
-    except Exception as e:
-        print(f"❌ Payout Finalization Error: {str(e)}")
-        if 'response' in locals():
-            print(f"Response status: {response.status_code}")
-            print(f"Response body: {response.text}")
-        return None
+        print(f"Payment verification error: {str(e)}")
+        return False
 
 # ============= REST API Endpoints =============
 
@@ -191,17 +92,17 @@ def health_check():
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
-    """Create a new order with Bitnob Lightning payment"""
+    """Create a new order with Bitnob payment"""
     data = request.json
     order_id = f"#{str(uuid.uuid4())[:8].upper()}"
-
-    # Create Lightning invoice
-    invoice_response = create_lightning_invoice(
+    
+    # Create Bitnob invoice
+    bitnob_invoice = create_bitnob_invoice(
         amount_btc=data.get('amount', '0.0001'),
-        customer_email=data.get('customer_email', 'user@example.com'),
-        description=data.get('orderDescription', 'Escrow payment')
+        description=data.get('orderDescription', f'Order {order_id}'),
+        customer_email=data.get('customer_email', 'user@example.com')
     )
-
+    
     order = {
         'id': order_id,
         'amount': data.get('amount', '0.0001'),
@@ -213,24 +114,24 @@ def create_order():
         'riderPhone': data.get('riderPhone'),
         'whatsapp': data.get('whatsapp'),
         'status': 'pending',
-        'payment_status': 'invoice_created' if invoice_response else 'pending',
+        'payment_status': 'pending',
         'created_at': datetime.now().isoformat(),
         'delivery_location': {
             'lat': NAIROBI_COORDS['lat'] + random.uniform(-0.05, 0.05),
             'lng': NAIROBI_COORDS['lng'] + random.uniform(-0.05, 0.05)
         },
-        'bitnob_invoice': invoice_response
+        'bitnob_invoice': bitnob_invoice if bitnob_invoice else None
     }
-
+    
     orders[order_id] = order
-
+    
     # Broadcast new order to all connected clients
     socketio.emit('new_order', order, namespace='/')
-
+    
     return jsonify({
         'success': True,
         'order': order,
-        'payment_invoice': invoice_response
+        'payment_invoice': bitnob_invoice
     }), 201
 
 @app.route('/api/orders/<order_id>', methods=['GET'])
@@ -252,27 +153,27 @@ def verify_payment(order_id):
     order = orders.get(order_id)
     if not order:
         return jsonify({'error': 'Order not found'}), 404
-
+    
     if not order.get('bitnob_invoice'):
         return jsonify({'error': 'No payment invoice found'}), 400
-
+    
     payment_hash = order['bitnob_invoice'].get('data', {}).get('paymentHash')
     if payment_hash:
         is_paid = verify_bitnob_payment(payment_hash)
-
+        
         if is_paid:
             order['payment_status'] = 'paid'
             order['status'] = 'confirmed'
-
+            
             # Notify clients
             socketio.emit('payment_confirmed', {
                 'order_id': order_id,
                 'status': 'confirmed',
                 'payment_status': 'paid'
             }, namespace='/')
-
+            
             return jsonify({'success': True, 'paid': True, 'order': order})
-
+    
     return jsonify({'success': False, 'paid': False})
 
 @app.route('/api/orders/<order_id>/status', methods=['PUT'])
@@ -280,18 +181,18 @@ def update_order_status(order_id):
     """Update order status"""
     data = request.json
     new_status = data.get('status')
-
+    
     if new_status not in ORDER_STATUSES:
         return jsonify({'error': 'Invalid status'}), 400
-
+    
     order = orders.get(order_id)
     if not order:
         return jsonify({'error': 'Order not found'}), 404
-
+    
     old_status = order['status']
     order['status'] = new_status
     order['updated_at'] = datetime.now().isoformat()
-
+    
     # Broadcast status update
     socketio.emit('order_status_update', {
         'order_id': order_id,
@@ -299,17 +200,17 @@ def update_order_status(order_id):
         'new_status': new_status,
         'timestamp': order['updated_at']
     }, namespace='/')
-
+    
     # Notify specific order room
     socketio.emit('status_changed', order, room=order_id)
-
+    
     return jsonify(order)
 
 @app.route('/api/drivers/<driver_id>/location', methods=['POST'])
 def update_driver_location(driver_id):
     """Update driver's GPS location"""
     data = request.json
-
+    
     location = {
         'driver_id': driver_id,
         'lat': data.get('lat'),
@@ -318,19 +219,19 @@ def update_driver_location(driver_id):
         'speed': data.get('speed', 0),
         'timestamp': datetime.now().isoformat()
     }
-
+    
     drivers[driver_id] = location
-
+    
     # Get driver's assigned order
     order_id = data.get('order_id')
-
+    
     # Broadcast location update to order room
     if order_id:
         socketio.emit('driver_location_update', location, room=order_id)
-
+    
     # Broadcast to all tracking this driver
     socketio.emit('driver_location', location, namespace='/')
-
+    
     return jsonify(location)
 
 @app.route('/api/drivers/<driver_id>/location', methods=['GET'])
@@ -348,16 +249,16 @@ def assign_driver(order_id):
     driver_id = data.get('driver_id')
     driver_name = data.get('driver_name', 'John Doe')
     driver_phone = data.get('driver_phone', '+254712345678')
-
+    
     order = orders.get(order_id)
     if not order:
         return jsonify({'error': 'Order not found'}), 404
-
+    
     order['driver_id'] = driver_id
     order['riderName'] = driver_name
     order['riderPhone'] = driver_phone
     order['status'] = 'confirmed'
-
+    
     # Initialize driver location near restaurant
     if driver_id not in drivers:
         drivers[driver_id] = {
@@ -370,7 +271,7 @@ def assign_driver(order_id):
             'speed': 0,
             'timestamp': datetime.now().isoformat()
         }
-
+    
     # Notify about driver assignment
     socketio.emit('driver_assigned', {
         'order_id': order_id,
@@ -379,7 +280,7 @@ def assign_driver(order_id):
         'driver_phone': driver_phone,
         'driver_location': drivers[driver_id]
     }, room=order_id)
-
+    
     return jsonify(order)
 
 # ============= WebSocket Events =============
@@ -412,14 +313,14 @@ def handle_track_order(data):
     if order_id in orders:
         join_room(order_id)
         order = orders[order_id]
-
+        
         # Send current order status
         emit('order_data', order)
-
+        
         # Send driver location if assigned
         if 'driver_id' in order and order['driver_id'] in drivers:
             emit('driver_location_update', drivers[order['driver_id']])
-
+        
         print(f'Client {request.sid} tracking order {order_id}')
     else:
         emit('error', {'message': 'Order not found'})
@@ -436,37 +337,37 @@ def handle_simulate_delivery(data):
     """Simulate a delivery journey (for testing)"""
     order_id = data.get('order_id')
     order = orders.get(order_id)
-
+    
     if not order:
         emit('error', {'message': 'Order not found'})
         return
-
+    
     # Assign driver if not already assigned
     driver_id = order.get('driver_id', f'DRIVER-{random.randint(1000, 9999)}')
     if 'driver_id' not in order:
         order['driver_id'] = driver_id
         order['riderName'] = 'John Doe'
         order['riderPhone'] = '+254712345678'
-
+    
     # Get destination
     dest_lat = order['delivery_location']['lat']
     dest_lng = order['delivery_location']['lng']
-
+    
     # Start from restaurant
     current_lat = NAIROBI_COORDS['lat']
     current_lng = NAIROBI_COORDS['lng']
-
+    
     # Calculate steps
     steps = 15
     lat_step = (dest_lat - current_lat) / steps
     lng_step = (dest_lng - current_lng) / steps
-
+    
     import threading
     import time
-
+    
     def simulate_movement():
         nonlocal current_lat, current_lng
-
+        
         for i in range(steps + 1):
             location = {
                 'driver_id': driver_id,
@@ -476,13 +377,13 @@ def handle_simulate_delivery(data):
                 'speed': 30 + random.uniform(-5, 10),
                 'timestamp': datetime.now().isoformat()
             }
-
+            
             drivers[driver_id] = location
             socketio.emit('driver_location_update', location, room=order_id)
-
+            
             current_lat += lat_step
             current_lng += lng_step
-
+            
             # Update status during journey
             if i == 0:
                 order['status'] = 'picked_up'
@@ -493,13 +394,13 @@ def handle_simulate_delivery(data):
             elif i == steps:
                 order['status'] = 'delivered'
                 socketio.emit('status_changed', order, room=order_id)
-
+            
             time.sleep(2)  # Update every 2 seconds
-
+    
     thread = threading.Thread(target=simulate_movement)
     thread.daemon = True
     thread.start()
-
+    
     emit('simulation_started', {'order_id': order_id, 'driver_id': driver_id})
 
 @socketio.on('get_active_orders')
@@ -513,34 +414,26 @@ def handle_confirm_delivery(data):
     """Confirm delivery and release payment from escrow"""
     order_id = data.get('order_id')
     order = orders.get(order_id)
-
+    
     if not order:
         emit('error', {'message': 'Order not found'})
         return
-
-    # Step 3: Finalize payout (release funds from escrow)
-    finalize_response = None
-    if order.get('bitnob_quote_id'):
-        finalize_response = finalize_bitnob_payout(order['bitnob_quote_id'])
-
+    
     # Update order status
     order['status'] = 'delivered'
     order['delivered_at'] = datetime.now().isoformat()
-    order['payment_released'] = True if finalize_response else False
-    order['bitnob_finalize'] = finalize_response
-
+    order['payment_released'] = True
+    
     # Notify all clients
     socketio.emit('delivery_confirmed', {
         'order_id': order_id,
         'status': 'delivered',
-        'payment_released': order['payment_released'],
-        'finalize_response': finalize_response
+        'payment_released': True
     }, room=order_id)
-
+    
     emit('delivery_success', {
-        'message': 'Delivery confirmed. Payment released from escrow.' if finalize_response else 'Delivery confirmed but payment release failed.',
-        'order': order,
-        'payment_finalized': bool(finalize_response)
+        'message': 'Delivery confirmed. Payment released from escrow.',
+        'order': order
     })
 
 # ============= Run Server =============
@@ -549,8 +442,8 @@ if __name__ == '__main__':
     print("=" * 50)
     print("🚀 Starting HoldPay Delivery Tracking Server")
     print("=" * 50)
-    print(f"Server URL: http://localhost:5001")
-    print(f"WebSocket: ws://localhost:5001")
+    print(f"Server URL: http://localhost:5000")
+    print(f"WebSocket: ws://localhost:5000")
     print(f"Bitnob Integration: {'✓ Active' if BITNOB_API_KEY else '✗ Not configured'}")
     print("=" * 50)
-    socketio.run(app, debug=True, host='0.0.0.0', port=5001, allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
